@@ -28,5 +28,29 @@
   }
   .sidebarRight {
     background-color: #453f58;
+    width: 300px;
+    .sidebarTop {
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+    }
+  }
+  .sidebarChannels {
+    padding: 13px;
+    .sidebarChannelHeader {
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5px;
+      .sidebarHeader {
+        display: flex;
+      }
+      .sidebarAddIcon:hover {
+        cursor: pointer;
+      }
+    }
   }
 }
