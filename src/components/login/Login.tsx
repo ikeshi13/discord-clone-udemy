@@ -3,7 +3,6 @@ import "./Login.scss";
 import { Button } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
-import { error } from "console";
 
 const Login = () => {
   const signIn = () => {

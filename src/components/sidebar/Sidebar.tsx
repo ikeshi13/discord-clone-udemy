@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Sidebar.scss";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
@@ -8,24 +8,25 @@ import HeadphonesIcon from "@mui/icons-material/Headphones";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { auth, db } from "../../firebase";
 import { useAppSelector } from "../../app/hooks";
-// import { collection, query } from "firebase/firestore/lite";
-import { onSnapshot, collection, query } from "firebase/firestore";
+import useCollection from "../../hooks/useCollection";
+import { addDoc, collection } from "firebase/firestore";
 
 const Sidebar = () => {
-  const user = useAppSelector((state) => state.user);
+  const user = useAppSelector((state) => state.user.user);
+  const { documents: channels } = useCollection("channels");
 
-  const q = query(collection(db, "channels"));
+  const addChannel = async () => {
+    let newChannelName: string | null = prompt("新しいチャンネルを追加します。");
 
-  useEffect(() => {
-    onSnapshot(q, (querySnapshot) => {
-      const channelsResults = [];
-      querySnapshot.docs.forEach((doc) => console.log(doc));
-    });
-  }, []);
+    if (newChannelName) {
+      await addDoc(collection(db, "channels"), {
+        channelName: newChannelName,
+      });
+    }
+  };
 
   return (
     <div className="sidebar">
-      {/**sidebarLeft */}
       <div className="sidebarLeft">
         <div className="serverIcon">
           <img src="./discordIcon.png"></img>
@@ -34,26 +35,23 @@ const Sidebar = () => {
           <img src="./logo192.png"></img>
         </div>
       </div>
-      {/**sidebarRight */}
       <div className="sidebarRight">
         <div className="sidebarTop">
           <h3>Discord</h3>
           <ExpandMoreIcon />
         </div>
-        {/** sidebarChannel */}
         <div className="sidebarChannels">
           <div className="sidebarChannelHeader">
             <div className="sidebarHeader">
               <ExpandMoreIcon />
               <h4>テストチャンネル</h4>
             </div>
-            <AddIcon className="sidebarAddIcon" />
+            <AddIcon className="sidebarAddIcon" onClick={() => addChannel()} />
           </div>
           <div className="sidebarChannelList">
-            <SidebarChannel />
-            <SidebarChannel />
-            <SidebarChannel />
-            <SidebarChannel />
+            {channels.map((channel) => (
+              <SidebarChannel channel={channel} id={channel.id} key={channel.id} />
+            ))}
           </div>
           <div className="sidabarFooter">
             <div className="sidebarAccount">
