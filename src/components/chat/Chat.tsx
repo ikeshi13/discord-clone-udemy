@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+
 import "./Chat.scss";
-import ChatHeader from "./ChatHeader";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import GifIcon from "@mui/icons-material/Gif";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import ChatMessage from "./ChatMessage";
 import { useAppSelector } from "../../app/hooks";
-import { addDoc, collection, CollectionReference, DocumentData, DocumentReference, onSnapshot, orderBy, query, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 import useSubCollection from "../../hooks/useSubCollection";
+import ChatHeader from "./ChatHeader";
+import ChatMessage from "./ChatMessage";
+
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SendIcon from "@mui/icons-material/Send";
+
+import { addDoc, collection, CollectionReference, DocumentData, DocumentReference, onSnapshot, orderBy, query, serverTimestamp, Timestamp } from "firebase/firestore";
 
 function Chat() {
   const [inputText, setInputText] = useState<string>("");
@@ -18,10 +19,12 @@ function Chat() {
   const channelId = useAppSelector((state) => state.channel.channelId);
   const { subDocuments: messages } = useSubCollection("channels", "messages");
 
-  const sendMessage = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    //フォーム送信時にページリロードを防ぐ
+  const sendMessage = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    // フォーム送信時にページリロードを防ぐ
     e.preventDefault();
-    //channelsコレクションの中にあるmessagesコレクションの中にメッセージ情報を入れる
+    // メッセージが空の場合は送信しない
+    if (inputText === "") return;
+    // channelsコレクションの中にあるmessagesコレクションの中にメッセージ情報を入れる
     const cllectionRef: CollectionReference<DocumentData> = collection(db, "channels", String(channelId), "messages");
 
     const docRef: DocumentReference<DocumentData> = await addDoc(cllectionRef, {
@@ -30,6 +33,11 @@ function Chat() {
       user: user,
     });
     setInputText("");
+  };
+
+  // Enterキーでsubmitされるのを防ぐ
+  const stopEnterKeySubmit = (e: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
+    e.preventDefault();
   };
 
   return (
@@ -45,16 +53,14 @@ function Chat() {
       {/**caht input */}
       <div className="chatInput">
         <AddCircleOutlineIcon />
-        <form>
+        <form onClick={(e: React.MouseEvent<HTMLFormElement, MouseEvent>) => stopEnterKeySubmit(e)}>
           <input type="text" placeholder="#Udemyへメッセージを送信" value={inputText} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)} />
-          <button type="submit" className="chatInputButton" onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => sendMessage(e)}>
+          <button type="submit" className="chatInputButton">
             送信
           </button>
         </form>
-        <div className="chatInputIcons">
-          <CardGiftcardIcon />
-          <GifIcon />
-          <EmojiEmotionsIcon />
+        <div className="chatInputIcons" onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => sendMessage(e)}>
+          <SendIcon />
         </div>
       </div>
     </div>
