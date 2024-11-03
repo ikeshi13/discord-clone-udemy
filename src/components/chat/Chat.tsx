@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect, useRef } from "react";
 import "./Chat.scss";
 import { useAppSelector } from "../../app/hooks";
 import { db } from "../../firebase";
@@ -9,8 +8,7 @@ import ChatMessage from "./ChatMessage";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SendIcon from "@mui/icons-material/Send";
-
-import { addDoc, collection, CollectionReference, DocumentData, DocumentReference, onSnapshot, orderBy, query, serverTimestamp, Timestamp } from "firebase/firestore";
+import { addDoc, collection, CollectionReference, DocumentData, serverTimestamp } from "firebase/firestore";
 
 function Chat() {
   const [inputText, setInputText] = useState<string>("");
@@ -19,15 +17,23 @@ function Chat() {
   const channelId = useAppSelector((state) => state.channel.channelId);
   const { subDocuments: messages } = useSubCollection("channels", "messages");
 
-  const sendMessage = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    // フォーム送信時にページリロードを防ぐ
-    e.preventDefault();
-    // メッセージが空の場合は送信しない
-    if (inputText === "") return;
-    // channelsコレクションの中にあるmessagesコレクションの中にメッセージ情報を入れる
-    const cllectionRef: CollectionReference<DocumentData> = collection(db, "channels", String(channelId), "messages");
+  // メッセージリストのスクロール用の参照
+  const chatMessageRef = useRef<HTMLDivElement>(null);
 
-    const docRef: DocumentReference<DocumentData> = await addDoc(cllectionRef, {
+  // メッセージのリストが更新されたときにスクロール
+  useEffect(() => {
+    if (chatMessageRef.current) {
+      chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const sendMessage = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
+    if (inputText === "") return;
+
+    const collectionRef: CollectionReference<DocumentData> = collection(db, "channels", String(channelId), "messages");
+
+    await addDoc(collectionRef, {
       message: inputText,
       timestamp: serverTimestamp(),
       user: user,
@@ -42,15 +48,15 @@ function Chat() {
 
   return (
     <div className="chat">
-      {/**caht header */}
+      {/** chat header */}
       <ChatHeader channelName={channelName} />
-      {/**caht message */}
-      <div className="chatMessage">
+      {/** chat message */}
+      <div className="chatMessage" ref={chatMessageRef}>
         {messages.map((message, index) => (
           <ChatMessage key={index} message={message.message} timestamp={message.timestamp} user={message.user} />
         ))}
       </div>
-      {/**caht input */}
+      {/** chat input */}
       <div className="chatInput">
         <AddCircleOutlineIcon />
         <form onClick={(e: React.MouseEvent<HTMLFormElement, MouseEvent>) => stopEnterKeySubmit(e)}>
