@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "discord-clone-udemy-4cd1c"
-  }
+    "default": "discord-clone-udemy-4cd1c",
+    "production": "discord-clone-udemy-4cd1c"
+  },
+  "targets": {},
+  "etags": {}
 }

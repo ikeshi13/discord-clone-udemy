@@ -1,0 +1,27 @@
+.message {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  color: white;
+  justify-content: flex-start;
+  .messageInfo {
+    display: flex;
+    flex-direction: column; /* メッセージ情報を縦に並べる */
+    justify-content: flex-start;
+    padding: 20px 20px 20px 10px;
+    .messageTimestamp {
+      color: #797979;
+      margin-left: 10px;
+    }
+    h4 {
+      display: flex;
+      justify-content: space-between; /* ヘッダーを左右に配置 */
+    }
+    p {
+      margin: 0;
+      font-size: 1rem;
+      color: white;
+      text-align: left; /* デフォルトは左揃え */
+    }
+  }
+}

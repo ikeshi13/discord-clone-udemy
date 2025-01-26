@@ -4,7 +4,8 @@ import { useAppSelector } from "../../app/hooks";
 import { db } from "../../firebase";
 import useSubCollection from "../../hooks/useSubCollection";
 import ChatHeader from "./ChatHeader";
-import ChatMessage from "./ChatMessage";
+import ChatMessageLeft from "./ChatMessageLeft";
+import ChatMessageRight from "./ChatMessageRight";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SendIcon from "@mui/icons-material/Send";
@@ -51,11 +52,14 @@ function Chat() {
       {/** chat header */}
       <ChatHeader channelName={channelName} />
       {/** chat message */}
-      <div className="chatMessage" ref={chatMessageRef}>
+      <div className="chatMessage">
         {messages.map((message, index) => (
-          <ChatMessage key={index} message={message.message} timestamp={message.timestamp} user={message.user} />
+          <div key={index} className={user?.uid === message.user.uid ? "me" : "other"}>
+            {user?.uid === message.user.uid ? <ChatMessageRight message={message.message} timestamp={message.timestamp} user={message.user} /> : <ChatMessageLeft message={message.message} timestamp={message.timestamp} user={message.user} />}
+          </div>
         ))}
       </div>
+
       {/** chat input */}
       <div className="chatInput">
         <AddCircleOutlineIcon />

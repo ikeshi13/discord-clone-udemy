@@ -1,5 +1,5 @@
 import React from "react";
-import "./ChatMessage.scss";
+import "./ChatMessageLeft.scss";
 import { Avatar } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 
@@ -14,7 +14,7 @@ type Props = {
   };
 };
 
-const ChatMessage = (props: Props) => {
+const ChatMessageLeft = (props: Props) => {
   const { message, timestamp, user } = props;
   return (
     <div className="message">
@@ -30,4 +30,4 @@ const ChatMessage = (props: Props) => {
   );
 };
 
-export default ChatMessage;
+export default ChatMessageLeft;
